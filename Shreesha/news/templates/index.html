@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Today's News</title>
+    <script>
+        let voices = []; // To store the available voices
+
+        // Function to populate available voices
+        function populateVoices() {
+            voices = window.speechSynthesis.getVoices();
+        }
+
+        // Function to process the text for pauses at asterisks and read aloud
+        function readNews(news) {
+            if ('speechSynthesis' in window) {
+                // Ensure voices are loaded
+                populateVoices();
+
+                // Select a specific voice (you can customize this)
+                const selectedVoice = voices.find(voice => voice.name.includes("Google Indian English")) || voices[0];
+
+                // Split the news text by asterisks for pauses
+                const parts = news.split('*');
+                let utteranceQueue = [];
+
+                // Create a queue of utterances with pauses
+                parts.forEach((part, index) => {
+                    const utterance = new SpeechSynthesisUtterance(part.trim());
+                    utterance.rate = 0.8; // Reduce the speed of the voice
+                    utterance.voice = selectedVoice; // Set the selected voice
+                    utteranceQueue.push(utterance);
+                    
+
+                    // Add a pause after each part except the last
+                    if (index < parts.length - 1) {
+                        utteranceQueue.push(null); // null represents a pause
+                    }
+                });
+
+                // Function to play the utterance queue
+                function playQueue(queue) {
+                    if (queue.length === 0) return;
+
+                    const next = queue.shift();
+                    
+
+                    if (next) {
+                        next.onend = () => setTimeout(() => playQueue(queue), 5); // Reduced pause to 0.5 seconds
+                        window.speechSynthesis.speak(next);
+                    } else {
+                        // Pause handling (0.5-second gap)
+                        setTimeout(() => playQueue(queue), 5);
+                    }
+                }
+
+                // Start playing the utterance queue
+                playQueue(utteranceQueue);
+            } else {
+                alert("Your browser does not support text-to-speech!");
+            }
+        }
+
+        // Automatically read the news if available
+        window.onload = function() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.onvoiceschanged = populateVoices; // Populate voices when they load
+            }
+
+            const news = document.getElementById("news");
+            if (news) {
+                readNews(news.textContent);
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Click the button to generate today's news:</h1>
+    <form action="/generate-news" method="POST">
+        <button type="submit">Generate Today's News</button>
+    </form>
+
+    {% if news %}
+    <h2>Today's News:</h2>
+    <p id="news">{{ news }}</p>
+    {% endif %}
+</body>
+</html>

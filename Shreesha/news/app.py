@@ -7,7 +7,7 @@ import requests
 today = datetime.date.today()
 
 
-genai.configure(api_key="Google api key")
+genai.configure(api_key="AIzaSyC7EvEAU2jL-g92frZ9hjJXd_54s6WLsrM")
 app = Flask(__name__)
 
 def read_webpage(url):
@@ -30,11 +30,11 @@ url = "https://news.google.com/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNRE55YXpBU0JXVn
 text_content = read_webpage(url)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET","POST"])
 def index():
     return render_template("index.html")
 
-@app.route("/generate-news", methods=["POST"])
+@app.route("/generate_news", methods=["GET","POST"])
 def generate_news():
     model = genai.GenerativeModel("gemini-1.5-flash")
     prompt = f"""{text_content} Concise this and seperate the news.DO NOT INCLUDE ADS. IF YOU FIND ANY REMOVE THEM. And while starting the news say 'Today's top headline is'"""

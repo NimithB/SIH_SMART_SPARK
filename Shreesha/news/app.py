@@ -5,7 +5,7 @@ import datetime
 import requests
 
 today = datetime.date.today()
-print(today)
+
 
 genai.configure(api_key="Google api key")
 app = Flask(__name__)

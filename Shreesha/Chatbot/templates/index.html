@@ -3,102 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Input Example</title>
+    <title>Language Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            outline: none;
+        }
+
+        .button:focus {
+            outline: 2px solid #FFD700;
+            background-color: #0056b3;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        body.disable-mouse * {
+            pointer-events: none;
+        }
+    </style>
     <script>
-        let recognition;
-        let isRecognizing = false;
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
 
-        // Function to start voice recognition
-        function startVoiceRecognition() {
-            if (!('webkitSpeechRecognition' in window)) {
-                alert("Your browser does not support voice recognition.");
-                return;
-            }
-
-            recognition = new webkitSpeechRecognition();
-            recognition.lang = "en-US";
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            recognition.onstart = function () {
-                isRecognizing = true;
-                console.log("Voice recognition started...");
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
             };
-
-            recognition.onresult = function (event) {
-                const speechResult = event.results[0][0].transcript;
-                document.getElementById("user_input").value = speechResult;
-                console.log("Speech result:", speechResult);
-            };
-
-            recognition.onerror = function (event) {
-                alert("Voice recognition error: " + event.error);
-            };
-
-            recognition.onend = function () {
-                isRecognizing = false;
-                console.log("Voice recognition stopped.");
-            };
-
-            recognition.start();
         }
 
-        // Function to stop voice recognition and submit the form
-        function stopVoiceRecognition() {
-            if (isRecognizing && recognition) {
-                recognition.stop();
-                recognition.onend = function () {
-                    // Delay the form submission slightly to ensure text is captured
+        document.addEventListener('keydown', function (event) {
+            const buttons = document.querySelectorAll('.button');
+            const focusedIndex = Array.from(buttons).indexOf(document.activeElement);
+
+            if (event.key === 'f') {
+                const prevIndex = (focusedIndex - 1 + buttons.length) % buttons.length;
+                buttons[prevIndex].focus();
+                speakText(`${buttons[prevIndex].textContent}`);
+            } else if (event.key === 'j') {
+                const nextIndex = (focusedIndex + 1) % buttons.length;
+                buttons[nextIndex].focus();
+                speakText(`${buttons[nextIndex].textContent}`);
+            } else if (event.key === " ") {
+                if (focusedIndex !== -1) {
+                    const selectedButton = buttons[focusedIndex];
+                    speakText(`Navigating to ${selectedButton.textContent}`);
                     setTimeout(() => {
-                        document.getElementById("voiceForm").submit();
-                    }, 500); // 500ms delay
-                };
+                        window.location.href = selectedButton.getAttribute('onclick').split('=')[1].trim().replace(/'/g, '');
+                    }, 500);
+                }
             }
-        }
+        });
 
-        // Function to read the response aloud
-        function readResponse(responseText) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(responseText);
-                utterance.rate = 0.9; // Adjust the speed if needed
-                utterance.pitch = 1.0; // Adjust the pitch if needed
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("Your browser does not support text-to-speech.");
-            }
-        }
-
-        // Automatically read the response if available
         window.onload = function () {
-            const responseElement = document.getElementById("response");
-            if (responseElement && responseElement.textContent.trim()) {
-                readResponse(responseElement.textContent);
-            }
+            const buttons = document.querySelectorAll('.button');
+            buttons[0].focus();
+            speakText(buttons[0].textContent);
+
+            buttons.forEach(button => {
+                button.addEventListener('mouseover', () => {
+                    speakText(button.textContent);
+                });
+            });
         };
-
-        // Event listeners for key press and release
-        document.addEventListener("keydown", function (event) {
-            if (event.key === "j" && !isRecognizing) {
-                startVoiceRecognition();
-            }
-        });
-
-        document.addEventListener("keyup", function (event) {
-            if (event.key === "j") {
-                stopVoiceRecognition();
-            }
-        });
     </script>
 </head>
 <body>
-    <h1>Chatbot</h1>
-    <h2>Press and hold 'J' to provide input</h2>
-    <form id="voiceForm" action="/process" method="POST">
-        <input type="text" id="user_input" name="user_input" placeholder="Speak here..." required>
-    </form>
-
-    {% if response %}
-    <p id="response">{{ response }}</p>
-    {% endif %}
+    <h1>Choose a Language</h1>
+    <button class="button" onclick="window.location.href = 'kannada'">Kannada</button>
+    <button class="button" onclick="window.location.href = 'english'">English</button>
+    <button class="button" onclick="window.location.href = 'telugu'">Telugu</button>
 </body>
 </html>

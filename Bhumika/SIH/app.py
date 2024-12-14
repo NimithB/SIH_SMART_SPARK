@@ -9,7 +9,7 @@ today = datetime.date.today()
 app = Flask(__name__)
 
 # Constant IP address of the ESP8266
-ESP8266_IP = "192.168.137.236"  # Replace with your ESP8266's static IP
+ESP8266_IP = "172.19.193.51"  # Replace with your ESP8266's static IP
 ESP8266_PORT = 80  # Default HTTP port
 
 @app.route("/send", methods=["POST"])

@@ -1,56 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generate Today's News</title>
   <style>
     body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f1f1f1;
-}
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+    }
 
-h1 {
-  text-align: center;
-  font-size: 2em;
-  margin: 20px 0;
-  padding: 10px;
-  background-color: #fff;
-  border-radius: 5px;
-}
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
 
-form {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
+    form {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
 
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-.news-section {
-  margin: 20px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
+    .news-section {
+      margin: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
 
-h2 {
-  margin: 10px 0;
-}
+    h2 {
+      margin: 10px 0;
+    }
 
-#news {
-  margin: 10px 0;
-  padding: 10px;
-}
+    #news {
+      margin: 10px 0;
+      padding: 10px;
+    }
   </style>
   <script>
     let voices = []; // To store the available voices
@@ -109,7 +110,7 @@ h2 {
     }
 
     // Listen for Spacebar press to trigger form submission
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       if (event.keyCode === 32) { // Check for spacebar key code
         const form = document.getElementById("generateNewsForm"); // Assuming form ID is "generateNewsForm"
         if (form) {
@@ -121,7 +122,7 @@ h2 {
     });
 
     // Automatically read the news if available
-    window.onload = function() {
+    window.onload = function () {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.onvoiceschanged = populateVoices; // Populate voices when they load
       }
@@ -131,28 +132,25 @@ h2 {
         readNews(news.textContent);
       }
     };
+    var count = false;
+    wwindow.onload = function () {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = populateVoices; // Populate voices when they load
 
-window.onload = function() {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = populateVoices; // Populate voices when they load
+        const news = document.getElementById("news");
+        if (news) {
+          readNews(news.textContent);
+        }
 
-    const news = document.getElementById("news");
-    if (news) {
-      readNews(news.textContent);
-    }
-
-    var count = 0;
-    if (count === 1) {
-      const promptUtterance = new SpeechSynthesisUtterance("Press the spacebar to generate today's news.");
-      window.speechSynthesis.speak(promptUtterance);
-      count = 2;
-    }
+        promptdata = "Press the spacebar to generate today's news."
+        const promptUtterance = new SpeechSynthesisUtterance(promptdata);
+        window.speechSynthesis.speak(promptUtterance);
+        }
+  };
     // Speak the prompt to press the spacebar
-    
-  }
-};
   </script>
 </head>
+
 <body>
   <h1>Today's news:</h1>
   <form id="generateNewsForm" action="/generate_news" method="POST"> <button type="submit">Get the news </button>
@@ -163,4 +161,5 @@ window.onload = function() {
   <p id="news">{{ news }}</p>
   {% endif %}
 </body>
+
 </html>
